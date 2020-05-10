@@ -15,11 +15,12 @@ import argparse
 import time, datetime
 import visdom
 import random
-
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 # Parameters
 parser = argparse.ArgumentParser()
-parser.add_argument('--dataRoot', type = str, default = '../data/face/', help = 'file root')
+parser.add_argument('--dataRoot', type = str, default = 'data/face/', help = 'file root')
 parser.add_argument('--dataTrainList', type = str, default = 'data/train_list.txt', help = 'train file list')
 parser.add_argument('--dataTestList', type = str, default = 'data/test_list.txt', help = 'test file list')
 parser.add_argument('--workers', type = int, help = 'number of data loading workers', default = 12)
