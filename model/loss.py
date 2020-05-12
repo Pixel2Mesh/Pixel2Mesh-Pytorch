@@ -32,7 +32,7 @@ def laplace_coord(input, lap_idx, block_id, use_cuda = True):
 
     num_pts, num_indices = indices.shape[0], indices.shape[1]
     indices = indices.reshape((-1,))
-    vertices = torch.index_select(vertex, 0, indices)
+    vertices = torch.index_select(vertex, 0, indices.long())
     vertices = vertices.reshape((num_pts, num_indices, 3))
 
     laplace = torch.sum(vertices, 1)
@@ -107,7 +107,7 @@ def total_pts_loss(pred_pts_list, pred_feats_list, gt_pts, ellipsoid, use_cuda =
     lap_const = [0.2, 1., 1.]
 
     for i in range(3):
-        dist1, dist2 = distChamfer(gt_pts, pred_pts_list[i].unsqueeze(0))
+        dist1, dist2 = distChamfer(gt_pts.float(), pred_pts_list[i].unsqueeze(0).float())
         my_chamfer_loss += torch.mean(dist1) + torch.mean(dist2)
         my_edge_loss += edge_loss(pred_pts_list[i], gt_pts, ellipsoid["edges"], i, use_cuda)
         my_lap_loss += lap_const[i] * laplace_loss(pred_feats_list[i], pred_pts_list[i], ellipsoid["lap_idx"], i, use_cuda)
