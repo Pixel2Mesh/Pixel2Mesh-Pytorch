@@ -24,12 +24,12 @@ parser.add_argument('--dataRoot', type = str, default = 'data/face/', help = 'fi
 parser.add_argument('--dataTrainList', type = str, default = 'data/train_list.txt', help = 'train file list')
 parser.add_argument('--dataTestList', type = str, default = 'data/test_list.txt', help = 'test file list')
 parser.add_argument('--workers', type = int, help = 'number of data loading workers', default = 12)
-parser.add_argument('--nEpoch', type = int, default = 100, help = 'number of epochs to train for')
+parser.add_argument('--nEpoch', type = int, default = 150, help = 'number of epochs to train for')
 parser.add_argument('--hidden', type = int, default = 192,  help = 'number of units in  hidden layer')
 parser.add_argument('--featDim', type = int, default = 963,  help = 'number of units in perceptual feature layer')
 parser.add_argument('--coordDim', type = int, default = 3,  help='number of units in output layer')
 parser.add_argument('--weightDecay', type = float, default = 5e-6, help = 'weight decay for L2 loss')
-parser.add_argument('--lr', type = float, default = 5e-5, help = 'learning rate')
+parser.add_argument('--lr', type = float, default = 5e-4, help = 'learning rate')
 parser.add_argument('--env', type = str, default = "pixel2mesh", help = 'visdom environment')
 parser.add_argument('--lamb', type = float, default = 0.0001, help = 'loss coeff for img reconstruction task')
 
@@ -39,7 +39,11 @@ print (opt)
 # Read initial mesh
 num_blocks = 3
 num_supports = 2
-ellipsoid = read_init_mesh('data/info_ellipsoid.dat')
+#ellipsoid = read_init_mesh('data/info_ellipsoid.dat')
+ellipsoid = read_init_mesh('data/pixel2mesh_aux_3stages.dat')
+
+
+
 
 for i in range(3):
     idx = ellipsoid["lap_idx"][i].shape[0]
@@ -135,7 +139,7 @@ for epoch in range(opt.nEpoch):
         pred_pts_list, pred_feats_list, pred_img = network(img, init_pts)
 
         my_img_loss = 0 #opt.lamb * total_img_loss(pred_img, img)
-        my_pts_loss = total_pts_loss(pred_pts_list, pred_feats_list, pts, ellipsoid, use_cuda)
+        my_pts_loss = total_pts_loss(pred_pts_list, pred_feats_list, pts, ellipsoid, epoch, use_cuda)
 
         loss = my_pts_loss + my_img_loss if epoch == 0 else my_pts_loss
         #loss = my_pts_loss

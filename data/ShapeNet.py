@@ -10,10 +10,9 @@ from torchvision.transforms import Resize
 
 word_idx = {'02691156': 0, # airplane
             '03636649': 1, # lamp
-            '03001627': 2, # chair
-            'model'   : 3} # face
+            '03001627': 2} # chair
 
-idx_class = {0: 'airplane', 1: 'lamp', 2: 'chair', 3: 'face'}
+idx_class = {0: 'airplane', 1: 'lamp', 2: 'chair'}
 
 
 class ShapeNet(data.Dataset):
@@ -35,10 +34,17 @@ class ShapeNet(data.Dataset):
 
         name = os.path.join(self.file_root, self.file_names[index])
         data = pickle.load(open(name, "rb"), encoding = 'latin1')
+        #print(data)
         img, pts, normals = data[0].astype('float32') / 255.0, data[1][:, :3], data[1][:, 3:]
-        img = np.transpose(img, (2, 0, 1))
-        label = word_idx[self.file_names[index].split('_')[0]]
 
+        im = Image.fromarray(np.uint8(img))
+        im.show()
+
+        img = np.transpose(img, (2, 0, 1))
+
+        #label = word_idx[self.file_names[index].split('_')[0]]
+        label = 0
+        
         return img, pts, normals, label, self.file_names[index]
 
 
@@ -49,11 +55,14 @@ class ShapeNet(data.Dataset):
 
 if __name__ == "__main__":
 
-    file_root = "/home/pkq/tong/MVA/S1/objet/project/data/ShapeNetSmall"
-    dataloader = ShapeNet(file_root, 'train_list_small.txt')
+    #file_root = "/home/pkq/tong/MVA/S1/objet/project/data/ShapeNetSmall"
+    #dataloader = ShapeNet(file_root, 'train_list_small.txt')
+    file_root = ""
+    dataloader = ShapeNet(file_root, 'train_new1.txt')
 
     print("Load %d files!\n" % len(dataloader))
 
+    #get the first data
     img, pts, normals, label, name = dataloader[0]
 
     print("Info for the first data:")
@@ -61,4 +70,4 @@ if __name__ == "__main__":
     print("Point cloud shape: ", pts.shape)
     print("Normal shape: ", normals.shape)
     print("Class: ", idx_class[label])
-    print("File name: ", name)
+    print("File name: ", name) 
