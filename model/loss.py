@@ -113,6 +113,8 @@ def total_pts_loss(pred_pts_list, pred_feats_list, gt_pts, ellipsoid, epoch, use
         my_lap_loss += lap_const[i] * laplace_loss(pred_feats_list[i], pred_pts_list[i], ellipsoid["lap_idx"], i, use_cuda)
 
     my_pts_loss = 100 * my_chamfer_loss + 0.1 * my_edge_loss + (3 if epoch<=50 else 0.3) * my_lap_loss
+    #my_pts_loss = 100 * my_chamfer_loss + 0.1 * my_edge_loss + 3 * my_lap_loss
+
 
     return my_pts_loss
 

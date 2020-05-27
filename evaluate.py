@@ -14,15 +14,15 @@ import argparse
 import time, datetime
 import random
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 
 
 # Parameters
 parser = argparse.ArgumentParser()
-parser.add_argument('--dataPath', type = str, default = 'data/face/model_91.dat', 
+parser.add_argument('--dataPath', type = str, default = 'data/face/model_9.dat', 
                     help = 'the path to find the data')
-parser.add_argument('--modelPath', type = str, default = 'log/2020-05-12T17:21:34.093753/network_99.pth',  help = 'the path to find the trained model')
+parser.add_argument('--modelPath', type = str, default = 'log/2020-05-15T12:29:34.333796/network_49.pth',  help = 'the path to find the trained model')
 parser.add_argument('--savePath', type = str, default = 'eval/',  help = 'the path to save the reconstructed meshes')
 parser.add_argument('--saveName', type = str, default = 'out_mesh',  help = 'the name of the output mesh')
 parser.add_argument('--offPath', type = str, default = 'data/ellipsoid/',  help = 'the path to save the mesh surface')
@@ -38,7 +38,7 @@ use_cuda = torch.cuda.is_available()
 dtype = torch.cuda.FloatTensor if use_cuda else torch.FloatTensor
 
 #ellipsoid = read_init_mesh('data/info_ellipsoid.dat')
-ellipsoid = read_init_mesh('data/pixel2mesh_aux_3stages.dat')
+ellipsoid = read_init_mesh('data/pixel2mesh_aux_3stages_new.dat')
 
 
 
@@ -74,7 +74,7 @@ if use_cuda:
 pred_pts_list, pred_feats_list, pred_img = network(img, init_pts)
 
 for i in range(len(pred_pts_list)):
-    face = np.loadtxt(os.path.join(opt.offPath, "face" + str(i + 1) + ".obj"), dtype = '|S32')
+    face = np.loadtxt(os.path.join(opt.offPath, "second_face" + str(i + 1) + ".obj"), dtype = '|S32')
     vert = pred_pts_list[i].cpu().data.numpy()
     vert = np.hstack((np.full([vert.shape[0], 1], 'v'), vert))
     mesh = np.vstack((vert, face))

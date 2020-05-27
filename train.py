@@ -16,7 +16,7 @@ import time, datetime
 import visdom
 import random
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
 # Parameters
 parser = argparse.ArgumentParser()
@@ -24,7 +24,7 @@ parser.add_argument('--dataRoot', type = str, default = 'data/face/', help = 'fi
 parser.add_argument('--dataTrainList', type = str, default = 'data/train_list.txt', help = 'train file list')
 parser.add_argument('--dataTestList', type = str, default = 'data/test_list.txt', help = 'test file list')
 parser.add_argument('--workers', type = int, help = 'number of data loading workers', default = 12)
-parser.add_argument('--nEpoch', type = int, default = 150, help = 'number of epochs to train for')
+parser.add_argument('--nEpoch', type = int, default = 50, help = 'number of epochs to train for')
 parser.add_argument('--hidden', type = int, default = 192,  help = 'number of units in  hidden layer')
 parser.add_argument('--featDim', type = int, default = 963,  help = 'number of units in perceptual feature layer')
 parser.add_argument('--coordDim', type = int, default = 3,  help='number of units in output layer')
@@ -40,7 +40,7 @@ print (opt)
 num_blocks = 3
 num_supports = 2
 #ellipsoid = read_init_mesh('data/info_ellipsoid.dat')
-ellipsoid = read_init_mesh('data/pixel2mesh_aux_3stages.dat')
+ellipsoid = read_init_mesh('data/pixel2mesh_aux_3stages_new.dat')
 
 
 
@@ -104,6 +104,7 @@ vis_legend = ['Image Loss', 'Mesh Loss', 'Total Loss']
 iter_plot = create_vis_plot(vis, 'Iteration', 'Loss', vis_title, vis_legend)
 
 
+f=open('loss.txt','w')
 
 # Train model on the dataset
 for epoch in range(opt.nEpoch):
@@ -138,7 +139,7 @@ for epoch in range(opt.nEpoch):
 
         pred_pts_list, pred_feats_list, pred_img = network(img, init_pts)
 
-        my_img_loss = 0 #opt.lamb * total_img_loss(pred_img, img)
+        my_img_loss = opt.lamb * total_img_loss(pred_img, img)
         my_pts_loss = total_pts_loss(pred_pts_list, pred_feats_list, pts, ellipsoid, epoch, use_cuda)
 
         loss = my_pts_loss + my_img_loss if epoch == 0 else my_pts_loss
@@ -190,6 +191,7 @@ for epoch in range(opt.nEpoch):
                     )
         
         print('[%d: %d/%d] train loss:  %f ' %(epoch, i, len_dataset, loss.item()))
+        f.write(str(loss.item())+'\n')
 
 
     """

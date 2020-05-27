@@ -36,6 +36,10 @@ class ShapeNet(data.Dataset):
         data = pickle.load(open(name, "rb"), encoding = 'latin1')
         #print(data)
         img, pts, normals = data[0].astype('float32') / 255.0, data[1][:, :3], data[1][:, 3:]
+        '''
+        for i in range(len(pts)):
+            pts[i][1]=0-pts[i][1]
+        '''
 
         im = Image.fromarray(np.uint8(img))
         im.show()
